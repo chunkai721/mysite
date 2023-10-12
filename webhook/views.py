@@ -37,8 +37,8 @@ def update_server(request):
             return JsonResponse({'message': 'Updated PythonAnywhere and migrated successfully'}, status=200)
         except git.GitCommandError as e:
             return JsonResponse({'error': 'GitCommandError: {}'.format(e.stderr)}, status=500)
-        except subprocess.CalledProcessError:
-            return JsonResponse({'error': 'Error executing manage.py commands'}, status=500)
+        except subprocess.CalledProcessError as e:
+            return JsonResponse({'error': 'Error executing manage.py commands: {}'.format(e.output)}, status=500)
     else:
         return JsonResponse({'error': 'Wrong event type'}, status=400)
     
