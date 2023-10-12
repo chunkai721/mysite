@@ -23,6 +23,7 @@ urlpatterns = [
     path('update_server/', webhook.views.update_server, name='update_server'),
     path('admin/', admin.site.urls),
     path('accounts/', include('accounts.urls')),
+    path('webhook/', include('webhook.urls')),
 ]
 
 
