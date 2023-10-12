@@ -6,11 +6,15 @@ from linebot.exceptions import InvalidSignatureError
 from linebot.models import MessageEvent, TextMessage, TextSendMessage
 import subprocess
 import git
+import os
+from dotenv import load_dotenv
 
+# Load .env file
+load_dotenv()
 
 # Initialize LINE bot
-line_bot_api = LineBotApi('d8NLd76ri5tk87nHVatdlQxwbvmFzxN31DsEjSBz4A1wCC99dnSzcRbT7sia6b4iQBPbA3kXSbUKh/Mkc4d6j8eTFOsfA+Xs1FYq1DkyXAoJaoEX3gGZirKpTo5NQwoiOHDjBVbK7gNRXkfKUMqUPAdB04t89/1O/w1cDnyilFU=')
-handler = WebhookHandler('da4d953d7bb43d3535148d3ee59e8668')
+line_bot_api = LineBotApi(os.getenv('Channel_access_token'))
+handler = WebhookHandler(os.getenv('Channel_secret'))
 
 @csrf_exempt
 def update_server(request):
@@ -20,6 +24,9 @@ def update_server(request):
 
         try:
             repo.git.pull('origin', 'main')  # 使用repo.git.pull()代替origin.pull()
+
+            # 執行makemigrations
+            subprocess.check_call(['pip', 'install', '-r', 'requirements.txt'], cwd=repo_path)
 
             # 執行makemigrations
             subprocess.check_call(['python', 'manage.py', 'makemigrations'], cwd=repo_path)
