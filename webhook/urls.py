@@ -2,5 +2,5 @@ from django.urls import path
 from . import views
 
 urlpatterns = [
-    path('webhook/', views.callback, name='callback'),
+    path('', views.callback, name='callback'),
 ]
