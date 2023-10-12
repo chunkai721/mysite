@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+
+{% load static %}
+{% block content %}
+  <h2>
+    {% if user.is_authenticated %}
+      Hello, {{ user.username }}!
+      <a href="{% url 'logout' %}">登出</a>
+    {% else %}
+      Hello, World!
+      <a href="{% url 'login' %}">登入</a> | 
+      <a href="{% url 'register' %}">註冊</a>
+    {% endif %}
+  </h2>
+{% endblock %}
