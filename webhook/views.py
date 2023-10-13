@@ -1,9 +1,10 @@
 from django.shortcuts import render
+from django.contrib.auth import get_user_model, login
 from django.http import HttpResponse, JsonResponse
-from django.views.decorators.csrf import csrf_exempt
 from linebot import LineBotApi, WebhookHandler
 from linebot.exceptions import InvalidSignatureError
 from linebot.models import MessageEvent, TextMessage, TextSendMessage
+from django.views.decorators.csrf import csrf_exempt
 import subprocess
 import git
 import os
@@ -44,16 +45,32 @@ def update_server(request):
     
 @csrf_exempt
 def callback(request):
-    # Get X-Line-Signature header value
+    # 獲取 X-Line-Signature 頭部值
     signature = request.headers['X-Line-Signature']
 
-    # Get request body as text
+    # 獲取請求主體作為文本
     body = request.body.decode('utf-8')
 
     try:
         handler.handle(body, signature)
     except InvalidSignatureError:
         return HttpResponse(status=400)
+
+    # 獲取 LINE ID
+    line_id = event.source.user_id
+
+    # 檢查是否已有該 LINE ID 的用戶
+    user = get_user_model().objects.filter(line_id=line_id).first()
+
+    # 如果用戶不存在，創建一個新的用戶
+    if not user:
+        user = get_user_model().objects.create_user(
+            username=line_id,  # 使用 LINE ID 作為用戶名
+            line_id=line_id
+        )
+
+    # 登入該用戶
+    login(request, user)
 
     return HttpResponse(status=200)
 
